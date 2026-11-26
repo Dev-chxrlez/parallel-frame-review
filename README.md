@@ -61,7 +61,9 @@ Both excerpts are distributed under [Creative Commons Attribution 3.0](https://c
 | FFprobe | Both bundled files are H.264 MP4, with durations of 21.0 and 44.0 seconds |
 | Google Chrome with Playwright against the production build | Passed multi-URL and extensionless import, duplicate and malformed input handling, native metadata while filtered, both duration categories, unavailable media, individual and final removals, empty states, and the demo |
 | Native Chrome playback | Passed autoplay-on-hover at exactly 2×, mute and loop, pause and reset, rapid card transitions, keyboard preview and pause, and simulated rejected playback with no unhandled rejections |
+| WebM boundary check in Chrome | A 30.000-second WebM played at 2×, appeared under Short, and was excluded from Long |
 | Responsive layout | Passed desktop, tablet, and mobile column counts, no horizontal overflow at the tested mobile width, and tap playback with Chrome touch emulation |
+| Temporary Vercel deployment smoke test | The CLI reported the deployment ready, but the public endpoint returned HTTP 403 from the test environment. Hosted browser verification is pending. |
 
 The browser run recorded no unexpected JavaScript or console errors. The unavailable-media case intentionally produced a 404. Physical touch hardware, Safari, and Firefox were outside this run.
 
