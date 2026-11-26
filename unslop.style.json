@@ -1,0 +1,8 @@
+{
+  "radius": { "policy": "scale", "scale": [0, 3, 6, 10] },
+  "shadow": { "policy": "none" },
+  "glass": { "allow": false },
+  "gradients": { "allow": false },
+  "fonts": { "display": ["Space Grotesk"], "body": ["Space Grotesk"] },
+  "motion": { "requireReducedMotion": true }
+}

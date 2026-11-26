@@ -16,7 +16,7 @@ Open the local URL printed by Vite. For a production preview, run `npm run build
 ## Use Frame
 
 1. Paste public HTTP or HTTPS video URLs, one per line, and select **Import Videos**. Each valid URL is added even if another line has an error. **Load Demo Videos** adds two bundled samples for immediate review.
-2. Hover over a card for a muted, looping preview at 2×. Move away to pause and rewind when the video is seekable. On a touchscreen, tap Play or Pause. With a keyboard, use Tab to focus the control and Enter or Space to toggle it.
+2. Hover over a card for a muted, looping preview at 2× by default. Use the speed menu on each card to choose 2×, 4×, 6×, 8×, or 10×. Available speeds depend on the browser. Move away to pause and rewind when the video is seekable. On a touchscreen, tap Play or Pause. With a keyboard, use Tab to focus the control and Enter or Space to toggle it.
 3. Use **Duration** to see all videos, short videos (up to and including 30 seconds), or long videos (over 30 seconds). Use the trash button to remove an individual video.
 
 ## How it works
@@ -33,7 +33,7 @@ Open the local URL printed by Vite. For a production preview, run `npm run build
 
 React, strict TypeScript, Vite, custom CSS, and Lucide React keep the application client-side. There is no backend, database, authentication, or API key.
 
-A shared preview controller pauses the previous element before calling `play()` on the next one. It sets `muted`, `loop`, and `playbackRate = 2` before playback. Each play request has its own identity so a late rejection can only affect the current request. The video elements use `playsInline` and `preload="metadata"`, and remain paused until the user interacts.
+A shared preview controller pauses the previous element before calling `play()` on the next one. It sets `muted`, `loop`, and the card’s selected `playbackRate` before playback. Each play request has its own identity so a late rejection can only affect the current request. The video elements use `playsInline` and `preload="metadata"`, and remain paused until the user interacts.
 
 Cards record finite durations from native metadata events. Filtered cards stay mounted and hidden so metadata can arrive even when a duration filter is active. Unknown durations are shown under **All videos** only. Keeping the elements mounted favors smooth filtering for a small review library and can lead to more media requests in very large batches.
 

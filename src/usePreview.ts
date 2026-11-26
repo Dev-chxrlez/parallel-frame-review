@@ -19,14 +19,20 @@ export function usePreview() {
     setActive(null);
   }, []);
 
-  function start(video: HTMLVideoElement, mode: Preview['mode'], onError: () => void) {
+  function start(video: HTMLVideoElement, mode: Preview['mode'], speed: number, onError: () => void) {
     if (current.current?.video === video) return;
     stop();
     const request = { video, mode };
     current.current = request;
     video.muted = true;
     video.loop = true;
-    video.playbackRate = 2;
+    try {
+      video.playbackRate = speed;
+    } catch {
+      stop(video);
+      onError();
+      return;
+    }
     setActive(video);
 
     void video.play().catch(() => {
@@ -37,9 +43,9 @@ export function usePreview() {
     });
   }
 
-  function toggle(video: HTMLVideoElement, onError: () => void) {
+  function toggle(video: HTMLVideoElement, speed: number, onError: () => void) {
     if (current.current?.video === video) stop(video);
-    else start(video, 'manual', onError);
+    else start(video, 'manual', speed, onError);
   }
 
   function guardPlayback(video: HTMLVideoElement) {

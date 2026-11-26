@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
-import { CircleAlert, LoaderCircle, Pause, Play, Trash2 } from 'lucide-react';
+import { ChevronDown, CircleAlert, LoaderCircle, Pause, Play, Trash2 } from 'lucide-react';
 import { formatDuration, type VideoEntry } from './videos';
 import type { PreviewControls } from './usePreview';
+
+const previewSpeeds = [2, 4, 6, 8, 10] as const;
 
 interface Props {
   entry: VideoEntry;
@@ -16,6 +18,8 @@ export function VideoCard({ entry, duration, hidden, preview, onDuration, onRemo
   const player = useRef<HTMLVideoElement>(null);
   const [status, setStatus] = useState<'loading' | 'ready' | 'slow' | 'unavailable'>('loading');
   const [playbackError, setPlaybackError] = useState(false);
+  const [speed, setSpeed] = useState<number>(2);
+  const [speedError, setSpeedError] = useState(false);
   const active = preview.active !== null && preview.active === player.current;
   const { stop } = preview;
 
@@ -47,6 +51,23 @@ export function VideoCard({ entry, duration, hidden, preview, onDuration, onRemo
     setStatus('unavailable');
   }
 
+  function changeSpeed(nextSpeed: number) {
+    const video = player.current;
+    if (!video) return;
+    try {
+      video.playbackRate = nextSpeed;
+      if (video.playbackRate !== nextSpeed) {
+        video.playbackRate = speed;
+        setSpeedError(true);
+        return;
+      }
+      setSpeed(nextSpeed);
+      setSpeedError(false);
+    } catch {
+      setSpeedError(true);
+    }
+  }
+
   return (
     <article
       className="video-card"
@@ -54,13 +75,13 @@ export function VideoCard({ entry, duration, hidden, preview, onDuration, onRemo
       onPointerEnter={(event) => {
         if (event.pointerType !== 'mouse' || !player.current || status === 'unavailable') return;
         setPlaybackError(false);
-        preview.start(player.current, 'hover', () => setPlaybackError(true));
+        preview.start(player.current, 'hover', speed, () => setPlaybackError(true));
       }}
       onPointerLeave={() => {
         if (player.current) stop(player.current, 'hover');
       }}
     >
-      <div className="media">
+      <div className="media" data-playing={active}>
         <video
           ref={player}
           src={entry.url}
@@ -83,7 +104,18 @@ export function VideoCard({ entry, duration, hidden, preview, onDuration, onRemo
           onError={(event) => unavailable(event.currentTarget)}
           onPlaying={(event) => preview.guardPlayback(event.currentTarget)}
         />
-        {active && <span className="speed-badge">2× preview</span>}
+        {status === 'ready' && (
+          <div className="speed-control">
+            <select
+              aria-label={`Playback speed for ${entry.name}`}
+              value={speed}
+              onChange={(event) => changeSpeed(Number(event.currentTarget.value))}
+            >
+              {previewSpeeds.map((rate) => <option key={rate} value={rate}>{rate}×</option>)}
+            </select>
+            <ChevronDown size={13} aria-hidden="true" />
+          </div>
+        )}
         {duration !== null && <span className="duration-badge">{formatDuration(duration)}</span>}
         {status !== 'ready' && (
           <div className="media-message" role={hidden ? undefined : 'status'}>
@@ -97,11 +129,11 @@ export function VideoCard({ entry, duration, hidden, preview, onDuration, onRemo
           <button
             className="preview-button"
             type="button"
-            aria-label={`${active ? 'Pause' : 'Preview'} ${entry.name}${active ? '' : ' at 2× speed'}`}
+            aria-label={`${active ? 'Pause' : 'Preview'} ${entry.name}${active ? '' : ` at ${speed}× speed`}`}
             onClick={() => {
               if (!player.current) return;
               setPlaybackError(false);
-              preview.toggle(player.current, () => setPlaybackError(true));
+              preview.toggle(player.current, speed, () => setPlaybackError(true));
             }}
           >
             {active ? <Pause size={17} fill="currentColor" /> : <Play size={17} fill="currentColor" />}
@@ -119,6 +151,9 @@ export function VideoCard({ entry, duration, hidden, preview, onDuration, onRemo
       </div>
       {playbackError && status !== 'unavailable' && (
         <p className="playback-error" role="status">Preview couldn’t start. Press Play to retry.</p>
+      )}
+      {speedError && status === 'ready' && (
+        <p className="playback-error" role="status">This browser couldn’t apply that speed. Still set to {speed}×.</p>
       )}
     </article>
   );

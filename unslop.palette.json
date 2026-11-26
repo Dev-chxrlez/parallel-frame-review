@@ -1,0 +1,17 @@
+{
+  "name": "Frame",
+  "colors": {
+    "ground": "#14171a",
+    "surface": "#1c2024",
+    "recess": "#111416",
+    "divider": "#343b41",
+    "controlBorder": "#737c83",
+    "text": "#f0efeb",
+    "mutedText": "#b1bac0",
+    "action": "#ffad96",
+    "actionHover": "#ffc2b2",
+    "actionText": "#281712",
+    "error": "#ffb1ac",
+    "success": "#b6d8c5"
+  }
+}
